@@ -10,6 +10,14 @@ struct User {
     int age;
 };
 
+typedef enum {
+    ADD_USER = 1,
+    SHOW_USERS,
+    UPDATE_USER,
+    DELETE_USER,
+    EXIT
+} MenuOption;
+
 void createRecord() {
     FILE *file = fopen(FILENAME, "a");
     struct User u;
@@ -122,12 +130,24 @@ int main() {
         printf("Enter choice: ");
         scanf("%d", &choice);
 
-        if (choice == 1) createRecord();
-        else if (choice == 2) readRecords();
-        else if (choice == 3) updateRecord();
-        else if (choice == 4) deleteRecord();
-        else if (choice == 5) break;
-        else printf("Invalid choice!\n");
+        switch((MenuOption)choice) {
+            case ADD_USER:
+                createRecord();
+                break;
+            case SHOW_USERS:
+                readRecords();
+                break;
+            case UPDATE_USER:
+                updateRecord();
+                break;
+            case DELETE_USER:
+                deleteRecord();
+                break;
+            case EXIT:
+                exit(0);
+            default:
+                printf("Invalid choice!\n");
+        }
     }
     return 0;
 }
