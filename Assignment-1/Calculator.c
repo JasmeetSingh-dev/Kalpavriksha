@@ -17,7 +17,10 @@ int main() {
 
     int i = 0;
     while (expression[i] != '\0') {
-        if (expression[i] == ' ') { i++; continue; }
+        if (expression[i] == ' ') { 
+            i++; 
+            continue; 
+        }
         if (isdigit(expression[i])) {
             int val = 0;
             while (isdigit(expression[i])) {
@@ -44,8 +47,12 @@ int main() {
                 }
                 values[j] = values[j] / values[j+1];
             }
-            for (int k = j+1; k < vtop; k++) values[k] = values[k+1];
-            for (int k = j; k < otop; k++) ops[k] = ops[k+1];
+            for (int k = j+1; k < vtop; k++) {
+                values[k] = values[k+1];
+            }
+            for (int k = j; k < otop; k++) {
+                ops[k] = ops[k+1];
+            }
             vtop--; 
             otop--; 
             j--;
