@@ -5,87 +5,121 @@
 
 #define MAX 100
 
-int parseExpression(const char *expression, int values[], char ops[], int *vtop, int *otop) {
-    int i = 0;
-    while (expression[i] != '\0') {
-        if (isspace(expression[i])) {
-            i++;
+int parseExpression(const char *expression, int numbers[], char operators[], int *numTop, int *opTop) 
+{
+    int index = 0;
+    while (expression[index] != '\0') 
+    {
+        if (isspace(expression[index])) 
+        {
+            index++;
             continue;
         }
 
-        if (isdigit(expression[i])) {
-            int val = 0;
-            while (isdigit(expression[i])) {
-                val = val * 10 + (expression[i] - '0');
-                i++;
+        if (isdigit(expression[index])) 
+        {
+            int numberValue = 0;
+            while (isdigit(expression[index])) 
+            {
+                numberValue = numberValue * 10 + (expression[index] - '0');
+                index++;
             }
-            values[++(*vtop)] = val;
+            numbers[++(*numTop)] = numberValue;
         } 
-        else if (strchr("+-*/", expression[i])) {
-            ops[++(*otop)] = expression[i];
-            i++;
+        else if (strchr("+-*/", expression[index])) 
+        {
+            operators[++(*opTop)] = expression[index];
+            index++;
         } 
-        else {
-            printf("Invalid character '%c' in expression.\n", expression[i]);
+        else 
+        {
+            printf("Invalid character '%c' in expression.\n", expression[index]);
             return 0;
         }
     }
     return 1;
 }
 
-void evaluateMD(int values[], char ops[], int *vtop, int *otop) {
-    for (int j = 0; j <= *otop; j++) {
-        if (ops[j] == '*' || ops[j] == '/') {
-            if (ops[j] == '*') {
-                values[j] = values[j] * values[j + 1];
-            } else {
-                if (values[j + 1] == 0) {
+void evaluateMultiplicationDivision(int numbers[], char operators[], int *numTop, int *opTop) 
+{
+    int operatorIndex = 0;
+    while (operatorIndex <= *opTop) 
+    {
+        if (operators[operatorIndex] == '*' || operators[operatorIndex] == '/') 
+        {
+            if (operators[operatorIndex] == '*') 
+            {
+                numbers[operatorIndex] = numbers[operatorIndex] * numbers[operatorIndex + 1];
+            } 
+            else 
+            {
+                if (numbers[operatorIndex + 1] == 0) 
+                {
                     printf("Division by zero error!\n");
                     exit(1);
                 }
-                values[j] = values[j] / values[j + 1];
+                numbers[operatorIndex] = numbers[operatorIndex] / numbers[operatorIndex + 1];
             }
 
-            for (int k = j + 1; k < *vtop; k++) {
-                values[k] = values[k + 1];
+            for (int shiftIndexNumbers = operatorIndex + 1; shiftIndexNumbers < *numTop; shiftIndexNumbers++) 
+            {
+                numbers[shiftIndexNumbers] = numbers[shiftIndexNumbers + 1];
             }
-            for (int k = j; k < *otop; k++) {
-                ops[k] = ops[k + 1];
+
+            for (int shiftIndexOperators = operatorIndex; shiftIndexOperators < *opTop; shiftIndexOperators++) 
+            {
+                operators[shiftIndexOperators] = operators[shiftIndexOperators + 1];
             }
-            (*vtop)--;
-            (*otop)--;
-            j--; 
+
+            (*numTop)--;
+            (*opTop)--;
+            operatorIndex--;
         }
+        operatorIndex++;
     }
 }
 
-int evaluateAS(int values[], char ops[], int vtop, int otop) {
-    int res = values[0];
-    for (int j = 0; j <= otop; j++) {
-        if (ops[j] == '+') res += values[j + 1];
-        else if (ops[j] == '-') res -= values[j + 1];
+int evaluateAdditionSubtraction(int numbers[], char operators[], int numTop, int opTop) 
+{
+    int resultValue = numbers[0];
+    int operatorIndex = 0;
+
+    while (operatorIndex <= opTop) 
+    {
+        if (operators[operatorIndex] == '+') 
+        {
+            resultValue += numbers[operatorIndex + 1];
+        } 
+        else if (operators[operatorIndex] == '-') 
+        {
+            resultValue -= numbers[operatorIndex + 1];
+        }
+        operatorIndex++;
     }
-    return res;
+    return resultValue;
 }
 
-int main() {
+int main() 
+{
     char expression[MAX];
-    int values[MAX];
-    char ops[MAX];
-    int vtop = -1, otop = -1;
+    int numbers[MAX];
+    char operators[MAX];
+    int numTop = -1;
+    int opTop = -1;
 
     printf("Enter expression: ");
     fgets(expression, MAX, stdin);
-    expression[strcspn(expression, "\n")] = 0; 
+    expression[strcspn(expression, "\n")] = 0;
 
-    if (!parseExpression(expression, values, ops, &vtop, &otop)) {
+    if (!parseExpression(expression, numbers, operators, &numTop, &opTop)) 
+    {
         return 1;
     }
 
-    evaluateMD(values, ops, &vtop, &otop);
+    evaluateMultiplicationDivision(numbers, operators, &numTop, &opTop);
 
-    int result = evaluateAS(values, ops, vtop, otop);
+    int finalResult = evaluateAdditionSubtraction(numbers, operators, numTop, opTop);
 
-    printf("Result: %d\n", result);
+    printf("Result: %d\n", finalResult);
     return 0;
 }
