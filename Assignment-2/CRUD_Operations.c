@@ -4,13 +4,15 @@
 
 #define FILENAME "users.txt"
 
-struct User {
+struct User 
+{
     int id;
     char name[50];
     int age;
 };
 
-typedef enum {
+typedef enum 
+{
     ADD_USER = 1,
     SHOW_USERS,
     UPDATE_USER,
@@ -18,10 +20,12 @@ typedef enum {
     EXIT
 } MenuOption;
 
-void createRecord() {
+void createRecord() 
+{
     FILE *file = fopen(FILENAME, "a");
     struct User u;
-    if (file == NULL) {
+    if (file == NULL) 
+    {
         printf("Cannot open file!\n");
         return;
     }
@@ -37,28 +41,33 @@ void createRecord() {
     printf("Record added.\n");
 }
 
-void readRecords() {
+void readRecords() 
+{
     FILE *file = fopen(FILENAME, "r");
     struct User u;
-    if (file == NULL) {
+    if (file == NULL) 
+    {
         printf("No records found.\n");
         return;
     }
 
     printf("\nID\tName\tAge\n");
-    while (fscanf(file, "%d %s %d", &u.id, u.name, &u.age) != EOF) {
+    while (fscanf(file, "%d %s %d", &u.id, u.name, &u.age) != EOF) 
+    {
         printf("%d\t%s\t%d\n", u.id, u.name, u.age);
     }
     fclose(file);
 }
 
-void updateRecord() {
+void updateRecord() 
+{
     FILE *file = fopen(FILENAME, "r");
     FILE *temp = fopen("temp.txt", "w");
     struct User u;
     int id, found = 0;
 
-    if (file == NULL || temp == NULL) {
+    if (file == NULL || temp == NULL) 
+    {
         printf("File error!\n");
         return;
     }
@@ -66,8 +75,10 @@ void updateRecord() {
     printf("Enter ID to update: ");
     scanf("%d", &id);
 
-    while (fscanf(file, "%d %s %d", &u.id, u.name, &u.age) != EOF) {
-        if (u.id == id) {
+    while (fscanf(file, "%d %s %d", &u.id, u.name, &u.age) != EOF) 
+    {
+        if (u.id == id) 
+        {
             printf("Enter new Name: ");
             scanf("%s", u.name);
             printf("Enter new Age: ");
@@ -89,13 +100,15 @@ void updateRecord() {
         printf("Record not found.\n");
 }
 
-void deleteRecord() {
+void deleteRecord() 
+{
     FILE *file = fopen(FILENAME, "r");
     FILE *temp = fopen("temp.txt", "w");
     struct User u;
     int id, found = 0;
 
-    if (file == NULL || temp == NULL) {
+    if (file == NULL || temp == NULL) 
+    {
         printf("File error!\n");
         return;
     }
@@ -103,10 +116,13 @@ void deleteRecord() {
     printf("Enter ID to delete: ");
     scanf("%d", &id);
 
-    while (fscanf(file, "%d %s %d", &u.id, u.name, &u.age) != EOF) {
-        if (u.id != id) {
+    while (fscanf(file, "%d %s %d", &u.id, u.name, &u.age) != EOF) 
+    {
+        if (u.id != id) 
+        {
             fprintf(temp, "%d %s %d\n", u.id, u.name, u.age);
-        } else {
+        } else 
+        {
             found = 1;
         }
     }
@@ -123,14 +139,17 @@ void deleteRecord() {
         printf("Record not found.\n");
 }
 
-int main() {
+int main() 
+{
     int choice;
-    while (1) {
+    while (1) 
+    {
         printf("\n1. Add User\n2. Show Users\n3. Update User\n4. Delete User\n5. Exit\n");
         printf("Enter choice: ");
         scanf("%d", &choice);
 
-        switch((MenuOption)choice) {
+        switch((MenuOption)choice) 
+        {
             case ADD_USER:
                 createRecord();
                 break;
