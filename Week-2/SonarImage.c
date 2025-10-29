@@ -4,11 +4,11 @@
 
 void displayMatrix(const int *matrix, const int matrixSize)
 {
-    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
+    for (int row = 0; row < matrixSize; row++)
     {
-        for (int colIndex = 0; colIndex < matrixSize; colIndex++)
+        for (int col = 0; col < matrixSize; col++)
         {
-            printf("%3d ", *(matrix + rowIndex * matrixSize + colIndex));
+            printf("%3d ", *(matrix + row * matrixSize + col));
         }
         printf("\n");
     }
@@ -17,9 +17,9 @@ void displayMatrix(const int *matrix, const int matrixSize)
 
 void initializeMatrix(int *matrix, const int matrixSize)
 {
-    for (int elementIndex = 0; elementIndex < matrixSize * matrixSize; elementIndex++)
+    for (int index = 0; index < matrixSize * matrixSize; index++)
     {
-        *(matrix + elementIndex) = rand() % 256;
+        *(matrix + index) = rand() % 256;
     }
 }
 
@@ -28,28 +28,28 @@ void freeMatrix(int *matrix)
     free(matrix);
 }
 
-void rotateMatrix90(int *matrix, const int matrixSize)
+void rotateClockwise(int *matrix, const int matrixSize)
 {
     int tempValue;
 
-    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
+    for (int row = 0; row < matrixSize; row++)
     {
-        for (int colIndex = rowIndex + 1; colIndex < matrixSize; colIndex++)
+        for (int col = row + 1; col < matrixSize; col++)
         {
-            int *firstElement = matrix + rowIndex * matrixSize + colIndex;
-            int *secondElement = matrix + colIndex * matrixSize + rowIndex;
+            int *firstElement = matrix + row * matrixSize + col;
+            int *secondElement = matrix + col * matrixSize + row;
             tempValue = *firstElement;
             *firstElement = *secondElement;
             *secondElement = tempValue;
         }
     }
 
-    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
+    for (int row = 0; row < matrixSize; row++)
     {
-        for (int colIndex = 0; colIndex < matrixSize / 2; colIndex++)
+        for (int col = 0; col < matrixSize / 2; col++)
         {
-            int *leftElement = matrix + rowIndex * matrixSize + colIndex;
-            int *rightElement = matrix + rowIndex * matrixSize + (matrixSize - colIndex - 1);
+            int *leftElement = matrix + row * matrixSize + col;
+            int *rightElement = matrix + row * matrixSize + (matrixSize - col - 1);
             tempValue = *leftElement;
             *leftElement = *rightElement;
             *rightElement = tempValue;
@@ -61,9 +61,9 @@ void applySmoothing(int *matrix, const int matrixSize)
 {
     int *temporaryRow = (int *)malloc(matrixSize * sizeof(int));
 
-    for (int rowIndex = 0; rowIndex < matrixSize; rowIndex++)
+    for (int row = 0; row < matrixSize; row++)
     {
-        for (int colIndex = 0; colIndex < matrixSize; colIndex++)
+        for (int col = 0; col < matrixSize; col++)
         {
             int sumOfNeighbors = 0;
             int validNeighborCount = 0;
@@ -72,8 +72,8 @@ void applySmoothing(int *matrix, const int matrixSize)
             {
                 for (int colOffset = -1; colOffset <= 1; colOffset++)
                 {
-                    int neighborRow = rowIndex + rowOffset;
-                    int neighborCol = colIndex + colOffset;
+                    int neighborRow = row + rowOffset;
+                    int neighborCol = col + colOffset;
 
                     if (neighborRow >= 0 && neighborRow < matrixSize &&
                         neighborCol >= 0 && neighborCol < matrixSize)
@@ -83,12 +83,12 @@ void applySmoothing(int *matrix, const int matrixSize)
                     }
                 }
             }
-            *(temporaryRow + colIndex) = sumOfNeighbors / validNeighborCount;
+            *(temporaryRow + col) = sumOfNeighbors / validNeighborCount;
         }
 
-        for (int colIndex = 0; colIndex < matrixSize; colIndex++)
+        for (int col = 0; col < matrixSize; col++)
         {
-            *(matrix + rowIndex * matrixSize + colIndex) = *(temporaryRow + colIndex);
+            *(matrix + row * matrixSize + col) = *(temporaryRow + col);
         }
     }
 
@@ -98,7 +98,7 @@ void applySmoothing(int *matrix, const int matrixSize)
 int main()
 {
     int matrixSize;
-    printf("Enter matrix size (2 – 10): ");
+    printf("Enter matrix size (2 - 10): ");
     scanf("%d", &matrixSize);
 
     if (matrixSize < 2 || matrixSize > 10)
@@ -118,7 +118,7 @@ int main()
 
     initializeMatrix(matrix, matrixSize);
     displayMatrix(matrix, matrixSize);
-    rotateMatrix90(matrix, matrixSize);
+    rotateClockwise(matrix, matrixSize);
     displayMatrix(matrix, matrixSize);
     applySmoothing(matrix, matrixSize);
     displayMatrix(matrix, matrixSize);
