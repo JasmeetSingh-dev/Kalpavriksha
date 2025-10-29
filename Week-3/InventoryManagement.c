@@ -1,33 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef struct 
 {
-    int productId;
-    char productName[100];
-    float productPrice;
-    int productQuantity;
+    int id;
+    char name[100];
+    float price;
+    int quantity;
 } Product;
+
+typedef enum 
+{
+    ADD_PRODUCT = 1,
+    VIEW_PRODUCTS,
+    UPDATE_QUANTITY,
+    SEARCH_BY_ID,
+    SEARCH_BY_NAME,
+    SEARCH_BY_PRICE_RANGE,
+    DELETE_PRODUCT,
+    EXIT_PROGRAM
+} MenuOption;
 
 void addNewProduct(Product **products, int *count) 
 {
     *products = (Product *)realloc(*products, (*count + 1) * sizeof(Product));
-    if (*products == NULL) 
+    if (*products != NULL) 
     {
-        printf("Memory reallocation failed!\n");
-        return;
-    }
-
     Product *newProduct = &((*products)[*count]);
     printf("\nEnter Product ID: ");
-    scanf("%d", &newProduct->productId);
+    scanf("%d", &newProduct->id);
     printf("Enter Product Name: ");
-    scanf("%s", newProduct->productName);
+    scanf("%s", newProduct->name);
     printf("Enter Price: ");
-    scanf("%f", &newProduct->productPrice);
+    scanf("%f", &newProduct->price);
     printf("Enter Quantity: ");
-    scanf("%d", &newProduct->productQuantity);
+    scanf("%d", &newProduct->quantity);
+    } 
+    else 
+    {
+        printf("Memory allocation failed!\n");
+        return;
+    }
 
     (*count)++;
     printf("Product added successfully!\n");
@@ -35,93 +50,94 @@ void addNewProduct(Product **products, int *count)
 
 void viewAllProducts(const Product *products, const int count) 
 {
-    if (count == 0) 
+    if (count > 0) 
+    {
+        printf("\n====== PRODUCT LIST ======\n");
+        for (int index = 0; index < count; index++) 
+        {
+            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n", products[index].id, products[index].name, products[index].price, products[index].quantity);
+        }
+    }
+    else
     {
         printf("No products available.\n");
-        return;
-    }
-
-    printf("\n====== PRODUCT LIST ======\n");
-    for (int index = 0; index < count; index++) 
-    {
-        printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n",
-               products[index].productId,
-               products[index].productName,
-               products[index].productPrice,
-               products[index].productQuantity);
     }
 }
 
 void updateQuantity(Product *products, const int count) 
 {
     int id, newQuantity;
+    bool found = false;
     printf("Enter Product ID to update quantity: ");
     scanf("%d", &id);
 
     for (int index = 0; index < count; index++) 
     {
-        if (products[index].productId == id) 
+        if (products[index].id == id) 
         {
             printf("Enter new quantity: ");
             scanf("%d", &newQuantity);
-            products[index].productQuantity = newQuantity;
+            products[index].quantity = newQuantity;
             printf("Quantity updated successfully.\n");
-            return;
+            found = true;
+            break;
         }
     }
-    printf("Product not found.\n");
+    if (!found) 
+    {
+        printf("Product not found.\n");
+    }
 }
 
 void searchById(const Product *products, const int count) 
 {
     int id;
+    bool found = false;
     printf("Enter Product ID to search: ");
     scanf("%d", &id);
 
     for (int index = 0; index < count; index++) 
     {
-        if (products[index].productId == id) 
+        if (products[index].id == id) 
         {
-            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n",
-                   products[index].productId,
-                   products[index].productName,
-                   products[index].productPrice,
-                   products[index].productQuantity);
-            return;
+            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n", products[index].id, products[index].name, products[index].price, products[index].quantity);
+            found = true;
+            break;
         }
     }
-    printf("Product not found.\n");
+    if (!found) 
+    {
+        printf("Product not found.\n");
+    }
 }
 
 void searchByName(const Product *products, const int count) 
 {
     char nameSearch[100];
-    int found = 0;
+    bool found = false;
 
     printf("Enter name or substring to search: ");
     scanf("%s", nameSearch);
 
     for (int index = 0; index < count; index++) 
     {
-        if (strstr(products[index].productName, nameSearch)) 
+        if (strstr(products[index].name, nameSearch)) 
         {
-            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n",
-                   products[index].productId,
-                   products[index].productName,
-                   products[index].productPrice,
-                   products[index].productQuantity);
-            found = 1;
+            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n", products[index].id, products[index].name, products[index].price, products[index].quantity);
+            found = true;
         }
     }
 
     if (!found)
+    {
         printf("No matching products found.\n");
+    }
 }
 
 void searchByPriceRange(const Product *products, const int count) 
 {
     float minPrice, maxPrice;
-    int found = 0;
+    bool found = false;
 
     printf("Enter minimum price: ");
     scanf("%f", &minPrice);
@@ -130,19 +146,17 @@ void searchByPriceRange(const Product *products, const int count)
 
     for (int index = 0; index < count; index++) 
     {
-        if (products[index].productPrice >= minPrice && products[index].productPrice <= maxPrice) 
+        if (products[index].price >= minPrice && products[index].price <= maxPrice) 
         {
-            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n",
-                   products[index].productId,
-                   products[index].productName,
-                   products[index].productPrice,
-                   products[index].productQuantity);
-            found = 1;
+            printf("Product ID: %d | Name: %s | Price: %.2f | Quantity: %d\n", products[index].id, products[index].name, products[index].price, products[index].quantity);
+            found = true;
         }
     }
 
     if (!found)
+    {
         printf("No products found in this price range.\n");
+    }
 }
 
 void deleteProduct(Product **products, int *count) 
@@ -153,7 +167,7 @@ void deleteProduct(Product **products, int *count)
 
     for (int index = 0; index < *count; index++) 
     {
-        if ((*products)[index].productId == id) 
+        if ((*products)[index].id == id) 
         {
             foundIndex = index;
             break;
@@ -194,13 +208,13 @@ int main()
     {
         printf("\nEnter details for product %d:\n", index + 1);
         printf("Product ID: ");
-        scanf("%d", &inventory[index].productId);
+        scanf("%d", &inventory[index].id);
         printf("Product Name: ");
-        scanf("%s", inventory[index].productName);
+        scanf("%s", inventory[index].name);
         printf("Price: ");
-        scanf("%f", &inventory[index].productPrice);
+        scanf("%f", &inventory[index].price);
         printf("Quantity: ");
-        scanf("%d", &inventory[index].productQuantity);
+        scanf("%d", &inventory[index].quantity);
     }
 
     int choice;
@@ -218,36 +232,36 @@ int main()
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice) 
+        switch ((MenuOption)choice) 
         {
-            case 1:
+            case ADD_PRODUCT:
                 addNewProduct(&inventory, &totalProducts);
                 break;
-            case 2:
+            case VIEW_PRODUCTS:
                 viewAllProducts(inventory, totalProducts);
                 break;
-            case 3:
+            case UPDATE_QUANTITY:
                 updateQuantity(inventory, totalProducts);
                 break;
-            case 4:
+            case SEARCH_BY_ID:
                 searchById(inventory, totalProducts);
                 break;
-            case 5:
+            case SEARCH_BY_NAME:
                 searchByName(inventory, totalProducts);
                 break;
-            case 6:
+            case SEARCH_BY_PRICE_RANGE:
                 searchByPriceRange(inventory, totalProducts);
                 break;
-            case 7:
+            case DELETE_PRODUCT:
                 deleteProduct(&inventory, &totalProducts);
                 break;
-            case 8:
+            case EXIT_PROGRAM:
                 printf("Exiting program...\n");
                 break;
             default:
                 printf("Invalid choice! Try again.\n");
         }
-    } while (choice != 8);
+    } while (choice != EXIT_PROGRAM);
 
     free(inventory);
     return 0;
